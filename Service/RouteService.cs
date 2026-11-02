@@ -293,6 +293,51 @@ namespace Project_02_nov.Services
             return _routeRepository.GetAll();
         }
 
+        public List<Route> FindRoutesByFareRange(double minimumFare, double maximumFare)
+        {
+            List<Route> matchingRoutes = new List<Route>();
+
+            if (double.IsNaN(minimumFare) || double.IsInfinity(minimumFare) ||
+                double.IsNaN(maximumFare) || double.IsInfinity(maximumFare) ||
+                minimumFare < 0 || maximumFare < minimumFare)
+            {
+                return matchingRoutes;
+            }
+
+            foreach (Route route in _routeRepository.GetAll())
+            {
+                if (route.Fare >= minimumFare && route.Fare <= maximumFare)
+                {
+                    matchingRoutes.Add(route);
+                }
+            }
+
+            return matchingRoutes;
+        }
+
+        public List<Route> SearchRoutes(string query)
+        {
+            List<Route> matchingRoutes = new List<Route>();
+
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return matchingRoutes;
+            }
+
+            query = query.Trim();
+            foreach (Route route in _routeRepository.GetAll())
+            {
+                if (route.StartingRoute.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                    route.Destination.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                    route.RouteId.Contains(query, StringComparison.OrdinalIgnoreCase))
+                {
+                    matchingRoutes.Add(route);
+                }
+            }
+
+            return matchingRoutes;
+        }
+
 
     }
 }

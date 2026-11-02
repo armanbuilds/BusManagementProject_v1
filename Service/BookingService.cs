@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Project_02_nov.Service
 {
-    internal class BookingService
+     class BookingService
     {
         private readonly BookingRepository _bookingRepository;
         private readonly BusRepository _busRepository;
@@ -65,9 +65,7 @@ namespace Project_02_nov.Service
                 return null;
             }
 
-            string bookingId = string.IsNullOrWhiteSpace(customBookingId) 
-                ? GenerateNextBookingId() 
-                : customBookingId.Trim();
+            string bookingId = string.IsNullOrWhiteSpace(customBookingId) ? GenerateNextBookingId()  : customBookingId.Trim();
 
             if (BookingIdExists(bookingId))
             {
@@ -216,6 +214,7 @@ namespace Project_02_nov.Service
             return results;
         }
 
+
         public void DeleteCancelledBooking(string bookingId)
         {
             if (string.IsNullOrWhiteSpace(bookingId))
@@ -224,28 +223,65 @@ namespace Project_02_nov.Service
             }
 
             List<Booking> bookings = _bookingRepository.GetAll();
-            int removedCount = bookings.RemoveAll(b =>
-                b.BookingId.Equals(bookingId, StringComparison.OrdinalIgnoreCase) &&
-                b.Status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase));
 
-            if (removedCount > 0)
+            Booking? targetBooking = null;
+
+            foreach (Booking b in bookings)
             {
+                if (b.BookingId.Equals(bookingId, StringComparison.OrdinalIgnoreCase))
+                {
+                    targetBooking = b;
+                    break;
+                }
+            }
+
+            if (targetBooking == null)
+            {
+                return;
+            }
+
+            if (targetBooking.Status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase))
+            {
+                bookings.Remove(targetBooking);
                 _bookingRepository.SaveAll(bookings);
             }
         }
+
+
 
         private void DeleteCancelledBookingsForPassenger(string passengerId)
         {
-            List<Booking> bookings = _bookingRepository.GetAll();
-            int removedCount = bookings.RemoveAll(b =>
-                b.PassengerId.Equals(passengerId, StringComparison.OrdinalIgnoreCase) &&
-                b.Status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase));
-
-            if (removedCount > 0)
+            if (string.IsNullOrWhiteSpace(passengerId))
             {
+                return;
+            }
+
+            List<Booking> bookings = _bookingRepository.GetAll();
+
+            List<Booking> cancelledBookings = new List<Booking>();
+
+            foreach (Booking b in bookings)
+            {
+                if (b.PassengerId.Equals(passengerId, StringComparison.OrdinalIgnoreCase))
+                {
+                    if (b.Status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase))
+                    {
+                        cancelledBookings.Add(b);
+                    }
+                }
+            }
+
+            if (cancelledBookings.Count > 0)
+            {
+                foreach (Booking b in cancelledBookings)
+                {
+                    bookings.Remove(b);
+                }
+
                 _bookingRepository.SaveAll(bookings);
             }
         }
+
 
         public List<Booking> GetAllBookings()
         {

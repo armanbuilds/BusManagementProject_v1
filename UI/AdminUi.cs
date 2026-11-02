@@ -31,7 +31,9 @@ namespace Project_02_nov.UI
                 Console.WriteLine("2. MANAGE ROUTES");
                 Console.WriteLine("3. VIEW ALL BOOKINGS");
                 Console.WriteLine("4. SEARCH BOOKING");
-                Console.WriteLine("5. EXIT TO MAIN MENU");
+                Console.WriteLine("5. SEARCH ROUTES BY FARE");
+                Console.WriteLine("6. SEARCH ROUTES BY KEYWORD");
+                Console.WriteLine("7. EXIT TO MAIN MENU");
                 Console.Write("Enter your choice: ");
 
                 int choice;
@@ -60,6 +62,14 @@ namespace Project_02_nov.UI
                         break;
 
                     case 5:
+                        SearchRoutesByFareUI();
+                        break;
+
+                    case 6:
+                        SearchRoutesByKeywordUI();
+                        break;
+
+                    case 7:
                         Console.Clear();
                         Console.WriteLine("EXITING TO MAIN MENU");
                         ConsoleUtility.PauseScreen();
@@ -374,6 +384,77 @@ namespace Project_02_nov.UI
                 Console.WriteLine($"Fare: {r.Fare}");
                 Console.WriteLine("--------------------------------");
             }
+        }
+
+        public static void SearchRoutesByFareUI()
+        {
+            Console.Clear();
+            Console.WriteLine("======= SEARCH ROUTES BY FARE =======");
+            Console.Write("Enter minimum fare: Rs. ");
+            if (!double.TryParse(Console.ReadLine(), out double minimumFare))
+            {
+                Console.WriteLine("Please enter a valid fare.");
+                ConsoleUtility.PauseScreen();
+                return;
+            }
+
+            Console.Write("Enter maximum fare: Rs. ");
+            if (!double.TryParse(Console.ReadLine(), out double maximumFare) ||
+                minimumFare < 0 || maximumFare < minimumFare ||
+                double.IsNaN(minimumFare) || double.IsInfinity(minimumFare) ||
+                double.IsNaN(maximumFare) || double.IsInfinity(maximumFare))
+            {
+                Console.WriteLine("Enter a valid fare range (maximum must be at least the minimum).");
+                ConsoleUtility.PauseScreen();
+                return;
+            }
+
+            RouteService routeService = new RouteService();
+            List<Route> routes = routeService.FindRoutesByFareRange(minimumFare, maximumFare);
+            if (routes.Count == 0)
+            {
+                Console.WriteLine("No routes found in that fare range.");
+            }
+            else
+            {
+                foreach (Route route in routes)
+                {
+                    Console.WriteLine($"Route ID: {route.RouteId} | From: {route.StartingRoute} | To: {route.Destination} | Fare: Rs. {route.Fare}");
+                }
+            }
+
+            ConsoleUtility.PauseScreen();
+        }
+
+        public static void SearchRoutesByKeywordUI()
+        {
+            Console.Clear();
+            Console.WriteLine("======= SEARCH ROUTES BY KEYWORD =======");
+            Console.Write("Enter a word or part of a starting point or destination: ");
+            string query = (Console.ReadLine() ?? "").Trim();
+
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                Console.WriteLine("Search query cannot be empty.");
+                ConsoleUtility.PauseScreen();
+                return;
+            }
+
+            RouteService routeService = new RouteService();
+            List<Route> routes = routeService.SearchRoutes(query);
+            if (routes.Count == 0)
+            {
+                Console.WriteLine("No routes found matching your query.");
+            }
+            else
+            {
+                foreach (Route route in routes)
+                {
+                    Console.WriteLine($"Route ID: {route.RouteId} | From: {route.StartingRoute} | To: {route.Destination} | Fare: Rs. {route.Fare}");
+                }
+            }
+
+            ConsoleUtility.PauseScreen();
         }
 
         public static void AddRouteUI()
