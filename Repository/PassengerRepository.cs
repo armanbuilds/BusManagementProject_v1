@@ -40,7 +40,7 @@ namespace Project_02_nov.Repository
 
             using (StreamReader reader = new StreamReader(_filePath))
             {
-                string line;
+                string? line;
 
                 while ((line = reader.ReadLine()) != null)
                 {
