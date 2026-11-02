@@ -53,16 +53,11 @@ namespace Project_02_nov.Repository
 
                     int totalSeats;
                     int availableSeats;
-                    if (int.TryParse(data[1], out totalSeats) &&
-                     int.TryParse(data[2], out availableSeats))
+                    if (int.TryParse(data[1], out totalSeats) && int.TryParse(data[2], out availableSeats))
                     {
                         string? routeId = string.IsNullOrWhiteSpace(data[3]) ? null : data[3].Trim();
 
-                        Bus bus = new Bus(
-                            data[0].Trim(),
-                            totalSeats,
-                            availableSeats,
-                            routeId);
+                        Bus bus = new Bus(data[0].Trim(),totalSeats,availableSeats,routeId);
 
                         buses.Add(bus);
                     }
