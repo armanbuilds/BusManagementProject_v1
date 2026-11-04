@@ -1,6 +1,5 @@
 using Project_02_nov.Models;
 using Project_02_nov.Service;
-using Project_02_nov.Services;
 using System;
 using System.Collections.Generic;
 
@@ -33,7 +32,8 @@ namespace Project_02_nov.UI
                 Console.WriteLine("4. SEARCH BOOKING");
                 Console.WriteLine("5. SEARCH ROUTES BY FARE");
                 Console.WriteLine("6. SEARCH ROUTES BY KEYWORD");
-                Console.WriteLine("7. EXIT TO MAIN MENU");
+                Console.WriteLine("7. VIEW ROUTES BY PAGE SIZE");
+                Console.WriteLine("8. EXIT TO MAIN MENU");
                 Console.Write("Enter your choice: ");
 
                 int choice;
@@ -70,15 +70,19 @@ namespace Project_02_nov.UI
                         break;
 
                     case 7:
-                        Console.Clear();
-                        Console.WriteLine("EXITING TO MAIN MENU");
-                        ConsoleUtility.PauseScreen();
-                        return;
-
-                    default:
-                        ConsoleUtility.ErrorMessage();
+                        ViewRoutesByPageView();
                         break;
-                }
+
+                    case 8:
+                            Console.Clear();
+                            Console.WriteLine("EXITING TO MAIN MENU");
+                            ConsoleUtility.PauseScreen();
+                            return;
+
+                        default:
+                            ConsoleUtility.ErrorMessage();
+                            break;
+                        }
             }
         }
 
@@ -364,7 +368,7 @@ namespace Project_02_nov.UI
             }
         }
 
-        public static void DisplayAllRoutes()
+        public static void DisplayAllRoutes()                                /////////////////////////////////////
         {
             RouteService routeService = new RouteService();
             List<Route> routes = routeService.GetAllRoutes();
@@ -689,7 +693,7 @@ namespace Project_02_nov.UI
 
         public static void SearchBookingUI()
         {
-            Console.Clear();
+            Console. Clear();
             Console.WriteLine("======= SEARCH BOOKING =======");
 
             Console.Write("Enter Booking ID: ");
@@ -714,6 +718,59 @@ namespace Project_02_nov.UI
             }
 
             ConsoleUtility.PauseScreen();
+        }
+
+        public static void ViewRoutesByPageView()
+        {
+            Console.Clear();
+            Console.WriteLine("ENTER THE SIZE OF PAGE OR RECORD ON ONE PAGE ");
+            int size = int.Parse(Console.ReadLine());
+
+            RouteService routeService = new RouteService();
+            List<Route> routes = routeService.GetAllRoutes();
+
+            if (routes.Count == 0)
+            {
+                Console.WriteLine("No routes found.");
+                ConsoleUtility.PauseScreen();
+                return;
+            }
+
+
+            if(size <= 0 )
+            {
+                Console.WriteLine("YOU CHOOSE 0 . INVALID RECORD CAN VIEW");
+
+                return;
+            }
+
+
+            Console.WriteLine("========== ALL ROUTES  ==========");
+            
+            
+                foreach (Route r in routes)
+                {
+
+
+                    Console.WriteLine($"Route ID: {r.RouteId}");
+                    Console.WriteLine($"Starting Point: {r.StartingRoute}");
+                    Console.WriteLine($"Destination: {r.Destination}");
+                    Console.WriteLine($"Fare: {r.Fare}");
+                    Console.WriteLine("--------------------------------");
+
+                }
+            
+           
+
+            ConsoleUtility.PauseScreen();
+
+
+
+
+
+
+
+
         }
     }
 }

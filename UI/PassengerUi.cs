@@ -1,6 +1,5 @@
 using Project_02_nov.Models;
 using Project_02_nov.Service;
-using Project_02_nov.Services;
 using System;
 using System.Collections.Generic;
 
@@ -20,7 +19,8 @@ namespace Project_02_nov.UI
                 Console.WriteLine("4. Book Ticket");
                 Console.WriteLine("5. Cancel Booking");
                 Console.WriteLine("6. View My Booking");
-                Console.WriteLine("7. Exit to Main Menu");
+                Console.WriteLine("7. Search route by filtering");
+                Console.WriteLine("8. Exit to Main Menu");
                 Console.Write("Choose your option: ");
 
                 int choice;
@@ -57,6 +57,10 @@ namespace Project_02_nov.UI
                         break;
 
                     case 7:
+                        SearchRoutebyType();
+                        break;
+
+                    case 8:
                         Console.Clear();
                         Console.WriteLine("EXITING TO MAIN MENU");
                         ConsoleUtility.PauseScreen();
@@ -161,7 +165,7 @@ namespace Project_02_nov.UI
             ConsoleUtility.PauseScreen();
         }
 
-        public static void SearchRoutesByFareUI()
+        public static void SearchRoutesByFareUI()                            ////
         {
             Console.Clear();
             Console.WriteLine("======= SEARCH ROUTES BY FARE =======");
@@ -332,6 +336,109 @@ namespace Project_02_nov.UI
             ConsoleUtility.PauseScreen();
         }
 
+        public static void SearchRoutebyType()                //ADDED FEAUTURE
+        { 
+
+            Console.Clear();
+            Console.WriteLine("======= SEARCH ROUTES =======");
+            Console.Write("Enter destination or starting city: ");
+            string query = (Console.ReadLine() ?? "").Trim();
+
+
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                Console.WriteLine("Search query cannot be empty.");
+                ConsoleUtility.PauseScreen();
+                return;
+            }
+
+
+            RouteService routeService = new RouteService();
+            BusService busService = new BusService();
+
+            //List<Route> routes = routeService.SearchRoutes(query);
+            List<Bus> buses = busService.GetAllBuses();
+
+            Console.WriteLine("======= SEARCH BY FARE RANGE =======");
+            Console.Write("Enter minimum fare: Rs. ");
+
+
+            if (!double.TryParse(Console.ReadLine(), out double minimumFare))
+            {
+                Console.WriteLine("Please enter a valid fare.");
+                ConsoleUtility.PauseScreen();
+                return;
+            }
+
+            Console.Write("Enter maximum fare: Rs. ");
+            if (!double.TryParse(Console.ReadLine(), out double maximumFare) ||
+                minimumFare < 0 || maximumFare < minimumFare ||
+                double.IsNaN(minimumFare) || double.IsInfinity(minimumFare) ||
+                double.IsNaN(maximumFare) || double.IsInfinity(maximumFare))
+            {
+                Console.WriteLine("Enter a valid fare range (maximum must be at least the minimum).");
+                ConsoleUtility.PauseScreen();
+                return;
+            }
+
+     
+            List<Route> routes = routeService.FindRoutesByFareRange(minimumFare, maximumFare);
+            if (routes.Count == 0)
+            {
+                Console.WriteLine("No routes found in that fare range.");
+            }
+
+            else
+            {
+                foreach (Route route in routes)
+                {
+                    Console.WriteLine($"\nRoute ID:        {route.RouteId}");
+                    Console.WriteLine($"From:            {route.StartingRoute}");
+                    Console.WriteLine($"To:              {route.Destination}");
+                    Console.WriteLine($"Fare:            Rs. {route.Fare}");
+
+
+                    Console.WriteLine("Buses:");
+                    foreach (Bus b in buses)
+                    {
+                        if (b.RouteId != null && b.RouteId.Equals(route.RouteId, StringComparison.OrdinalIgnoreCase))
+                        {
+                            Console.WriteLine($"   - Bus: {b.BusNumber} (Available Seats: {b.AvailableSeats}/{b.TotalSeats})");
+                        }
+                    }
+                }
+            }
+
+
+
+
+
+
+            //foreach (Route r in routes)
+            //{
+            //    Console.WriteLine($"\nRoute ID:        {r.RouteId}");
+            //    Console.WriteLine($"From:            {r.StartingRoute}");
+            //    Console.WriteLine($"To:              {r.Destination}");
+            //    Console.WriteLine($"Fare:            Rs. {r.Fare}");
+
+            //    Console.WriteLine("Buses:");
+            //    foreach (Bus b in buses)
+            //    {
+            //        if (b.RouteId != null && b.RouteId.Equals(r.RouteId, StringComparison.OrdinalIgnoreCase))
+            //        {
+            //            Console.WriteLine($"   - Bus: {b.BusNumber} (Available Seats: {b.AvailableSeats}/{b.TotalSeats})");
+            //        }
+            //    }
+            //}
+
+            if (routes.Count == 0)
+            {
+                Console.WriteLine("No routes found matching your query.");
+            }
+
+            ConsoleUtility.PauseScreen();
+
+        }
         public static void ViewMyBookingUI()
         {
             Console.Clear();

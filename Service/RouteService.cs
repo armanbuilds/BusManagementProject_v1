@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace Project_02_nov.Services
+namespace Project_02_nov.Service
 {
     internal class RouteService
     {
@@ -18,7 +18,11 @@ namespace Project_02_nov.Services
         public RouteService()
         {
             _routeRepository = new RouteRepository();
-            
+        }
+
+        public List<Route> GetAllRoutes()
+        {
+            return _routeRepository.GetAll();
         }
 
         public bool IsValidFare(double fare)
@@ -169,11 +173,7 @@ namespace Project_02_nov.Services
 
 
 
-        public bool UpdateRoute(
-            string routeId,
-            string newStartingRoute,
-            string newDestination,
-            double newFare)
+        public bool UpdateRoute(string routeId,string newStartingRoute, string newDestination, double newFare)
         {
             if (!IsValidRouteId(routeId))
             {
@@ -288,10 +288,7 @@ namespace Project_02_nov.Services
             return true;
         }
 
-        public List<Route> GetAllRoutes()
-        {
-            return _routeRepository.GetAll();
-        }
+      
 
         public List<Route> FindRoutesByFareRange(double minimumFare, double maximumFare)
         {
